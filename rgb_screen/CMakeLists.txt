@@ -17,7 +17,8 @@ pico_sdk_init()
 add_executable(rgb_screen
     src/main.c
     src/lv_port_disp.c
-    src/spi0_dma.c
+    src/turtle.c
+    src/lv_screen.c
 )
 
 # Include the local header directory
@@ -37,7 +38,9 @@ target_link_libraries(rgb_screen
     pico_stdlib
     lvgl
     hardware_spi
-    hardware_dma
+    hardware_timer
+    hardware_adc
+    hardware_irq
 )
 
 # Generate .uf2, .bin, and .hex files
