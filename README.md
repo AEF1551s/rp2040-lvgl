@@ -1,1 +1,1 @@
-GUI created with LVGL and Pico-SDK
+GUI created with LVGL v8.3.11 and Pico-SDK
