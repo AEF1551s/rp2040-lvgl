@@ -30,7 +30,10 @@ target_include_directories(rgb_screen PRIVATE
 pico_enable_stdio_usb(rgb_screen 1)
 pico_enable_stdio_uart(rgb_screen 1)
 
-set(LV_BUILD_CONF_PATH /home/roboros/rp2040-lvgl/lib/lvgl/lv_conf.h)
+set(LV_CONF_PATH
+    ${CMAKE_CURRENT_SOURCE_DIR}/conf/lv_conf.h
+    CACHE STRING "" FORCE)
+
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../lib/lvgl ${CMAKE_BINARY_DIR}/lvgl)
 
 # Link only to the Pico standard library
