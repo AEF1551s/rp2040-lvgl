@@ -14,14 +14,16 @@ const static uint TIMER_NUM = 0;
 const static uint ALARM_NUM = 0;
 const static uint ALARM_IRQ = 0;
 const static uint32_t PERIOD_MS = 1;
+const static uint CLAMP_LOW = 3000;
+const static uint CLAMP_HIGH = 4000;
 
-static volatile uint16_t adc_value = 0;  // Store ADC value updated by timer
+static volatile uint16_t adc_value = 0; // Store ADC value updated by timer
 
 void turtle_init();
 uint get_turtle();
 
+static inline uint clamp_range(uint value, uint low, uint high);
 static void alarm_ms_init();
 static void alarm_irq(void);
 
 #endif // TURTLE_H
-

@@ -19,10 +19,12 @@ static void alarm_ms_init()
     timer_hw->alarm[ALARM_NUM] = (uint32_t)target;
 }
 
-static void alarm_irq(void) {
+static void alarm_irq(void)
+{
+    static uint64_t target = 0;
     // Clear the alarm irq
     hw_clear_bits(&timer_hw->intr, 1u << ALARM_NUM);
-    uint64_t target = timer_hw->timerawl + (PERIOD_MS * 1000);
+    target = timer_hw->timerawl + (PERIOD_MS * 1000);
     timer_hw->alarm[ALARM_NUM] = (uint32_t)target;
 
     adc_select_input(ADC_CHANNEL);
@@ -36,7 +38,28 @@ void turtle_init()
     alarm_ms_init();
 }
 
+static inline uint clamp_range(uint value, uint low, uint high)
+{
+    uint result = 0;
+
+    if (value < low)
+    {
+        result = low;
+    }
+    else if (value > high)
+    {
+        result = high;
+    }
+    else
+    {
+        result = value;
+    }
+
+    return result;
+}
+
 inline uint get_turtle()
 {
-    return adc_value;
+    uint result = clamp_range(adc_value, CLAMP_LOW, CLAMP_HIGH);
+    return result;
 }
