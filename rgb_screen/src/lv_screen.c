@@ -1,6 +1,12 @@
 #include "lv_screen.h"
 
 static lv_obj_t *label;
+static char buf[10];
+
+const static uint SCREEN_TIMER_NUM = 0;
+const static uint SCREEN_ALARM_NUM = 1;
+const static uint SCREEN_ALARM_IRQ = 1;
+const static uint32_t SCREEN_PERIOD_MS = 20;
 
 void create_centered_number_label()
 {
