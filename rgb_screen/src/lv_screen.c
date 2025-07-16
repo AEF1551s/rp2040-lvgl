@@ -33,20 +33,41 @@ void update_label_number(unsigned int number)
     lv_obj_center(label); // recenter in case width changes (e.g. 1 → 10)
 }
 
+static void lv_tick_irq(void)
+{
+    static uint64_t target = 0;
+    // Clear the alarm irq
+    hw_clear_bits(&timer_hw->intr, 1u << SCREEN_ALARM_NUM);
+    target = timer_hw->timerawl + (SCREEN_PERIOD_MS * 1000);
+    timer_hw->alarm[SCREEN_ALARM_NUM] = (uint32_t)target;
 
-// Timer callback function
-bool lv_tick(repeating_timer_t *rt) {
     lv_tick_inc(1);
-    return true;  // return true to keep repeating
+}
+static void alarm_ms_init()
+{
+    // Enable the interrupt for our alarm (the timer outputs 4 alarm irqs)
+    hw_set_bits(&timer_hw->inte, 1u << SCREEN_ALARM_NUM);
+    // Set irq handler for alarm irq
+    irq_set_exclusive_handler(SCREEN_ALARM_IRQ, lv_tick_irq);
+    // Enable the alarm irq
+    irq_set_enabled(SCREEN_ALARM_IRQ, true);
+
+    // Alarm is only 32 bits so if trying to delay more
+    // than that need to be careful and keep track of the upper
+    // bits
+    uint64_t target = timer_hw->timerawl + (SCREEN_PERIOD_MS * 1000);
+
+    // Write the lower 32 bits of the target time to the alarm which
+    // will arm it
+    timer_hw->alarm[SCREEN_ALARM_NUM] = (uint32_t)target;
 }
 
-void screen_init(){
+void screen_init()
+{
     lv_init();
     lv_port_disp_init();
+    alarm_ms_init();
 
     create_centered_number_label();
     update_label_number(10);
-
-    static repeating_timer_t timer;
-    add_repeating_timer_us(-1000, lv_tick, NULL, &timer);
 }
