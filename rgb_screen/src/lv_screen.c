@@ -3,10 +3,10 @@
 static lv_obj_t *label;
 static char buf[10];
 
-const static uint SCREEN_TIMER_NUM = 0;
-const static uint SCREEN_ALARM_NUM = 1;
-const static uint SCREEN_ALARM_IRQ = 1;
-const static uint32_t SCREEN_PERIOD_MS = 20;
+const static uint TIMER_NUM = 0;
+const static uint ALARM_NUM = 1;
+const static uint ALARM_IRQ = 1;
+const static uint32_t PERIOD_MS = 1;
 
 void create_centered_number_label()
 {
@@ -43,29 +43,29 @@ static void lv_tick_irq(void)
 {
     static uint64_t target = 0;
     // Clear the alarm irq
-    hw_clear_bits(&timer_hw->intr, 1u << SCREEN_ALARM_NUM);
-    target = timer_hw->timerawl + (SCREEN_PERIOD_MS * 1000);
-    timer_hw->alarm[SCREEN_ALARM_NUM] = (uint32_t)target;
+    hw_clear_bits(&timer_hw->intr, 1u << ALARM_NUM);
+    target = timer_hw->timerawl + (PERIOD_MS * 1000);
+    timer_hw->alarm[ALARM_NUM] = (uint32_t)target;
 
     lv_tick_inc(1);
 }
 static void alarm_ms_init()
 {
     // Enable the interrupt for our alarm (the timer outputs 4 alarm irqs)
-    hw_set_bits(&timer_hw->inte, 1u << SCREEN_ALARM_NUM);
+    hw_set_bits(&timer_hw->inte, 1u << ALARM_NUM);
     // Set irq handler for alarm irq
-    irq_set_exclusive_handler(SCREEN_ALARM_IRQ, lv_tick_irq);
+    irq_set_exclusive_handler(ALARM_IRQ, lv_tick_irq);
     // Enable the alarm irq
-    irq_set_enabled(SCREEN_ALARM_IRQ, true);
+    irq_set_enabled(ALARM_IRQ, true);
 
     // Alarm is only 32 bits so if trying to delay more
     // than that need to be careful and keep track of the upper
     // bits
-    uint64_t target = timer_hw->timerawl + (SCREEN_PERIOD_MS * 1000);
+    uint64_t target = timer_hw->timerawl + (PERIOD_MS * 1000);
 
     // Write the lower 32 bits of the target time to the alarm which
     // will arm it
-    timer_hw->alarm[SCREEN_ALARM_NUM] = (uint32_t)target;
+    timer_hw->alarm[ALARM_NUM] = (uint32_t)target;
 }
 
 void screen_init()
