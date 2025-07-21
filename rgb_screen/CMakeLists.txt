@@ -19,11 +19,19 @@ add_executable(rgb_screen
     src/lv_port_disp.c
     src/turtle.c
     src/lv_screen.c
+    src/motor.c
+    src/low_pass_filter.c
+    assets/battery/battery_low.c
+    assets/battery/battery_25.c
+    assets/battery/battery_50.c
+    assets/battery/battery_75.c
+    assets/battery/battery_full.c
 )
 
 # Include the local header directory
 target_include_directories(rgb_screen PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/assets
 )
 
 # Enable standard I/O via USB and UART
@@ -44,7 +52,12 @@ target_link_libraries(rgb_screen
     hardware_timer
     hardware_adc
     hardware_irq
+    hardware_pwm
+
 )
+
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
 
 # Generate .uf2, .bin, and .hex files
 pico_add_extra_outputs(rgb_screen)
