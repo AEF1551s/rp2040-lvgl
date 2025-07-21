@@ -8,6 +8,8 @@
 
 #include "lvgl.h"
 #include "lv_port_disp.h"
+#include "battery.h"
+
 
 #include "turtle.h"
 
@@ -15,12 +17,12 @@ static void lv_tick_init();
 static void lv_tick_irq(void);
 
 void screen_init();
-void battery_init();
+// void battery_init();
 void speed_init();
 
 
 void create_centered_number_label();
 void update_speed();
-void update_battery();
+// void update_battery();
 
 #endif // LV_SCREEN_H

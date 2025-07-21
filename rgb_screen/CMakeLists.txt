@@ -26,12 +26,16 @@ add_executable(rgb_screen
     assets/battery/battery_50.c
     assets/battery/battery_75.c
     assets/battery/battery_full.c
+    screen/battery.c
+
+
 )
 
 # Include the local header directory
 target_include_directories(rgb_screen PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/include
     ${CMAKE_CURRENT_SOURCE_DIR}/assets
+    ${CMAKE_CURRENT_SOURCE_DIR}/screen
 )
 
 # Enable standard I/O via USB and UART
@@ -56,8 +60,8 @@ target_link_libraries(rgb_screen
 
 )
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
+# set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3")
+# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
 
 # Generate .uf2, .bin, and .hex files
 pico_add_extra_outputs(rgb_screen)

@@ -2,7 +2,7 @@
 
 static lv_obj_t *screen;
 static lv_obj_t *label;
-static lv_obj_t *battery = NULL;
+// static lv_obj_t *battery = NULL;
 
 static char buf[10];
 
@@ -14,45 +14,46 @@ const static uint32_t PERIOD_MS = 1;
 const static unsigned int Y_OFFSET = 20;
 
 const static unsigned int SPEED_UPDATE_MS = 50;
-const static unsigned int BATT_UPDATE_MS = 1000;
 
-// Battery images
-LV_IMG_DECLARE(battery_low);
-LV_IMG_DECLARE(battery_25);
-LV_IMG_DECLARE(battery_50);
-LV_IMG_DECLARE(battery_75);
-LV_IMG_DECLARE(battery_full);
+// const static unsigned int BATT_UPDATE_MS = 1000;
 
-const static uint battery_x = 10;
-const static uint battery_y = Y_OFFSET + 10;
+// // Battery images
+// LV_IMG_DECLARE(battery_low);
+// LV_IMG_DECLARE(battery_25);
+// LV_IMG_DECLARE(battery_50);
+// LV_IMG_DECLARE(battery_75);
+// LV_IMG_DECLARE(battery_full);
+
+// const static uint battery_x = 10;
+// const static uint battery_y = Y_OFFSET + 10;
 
 // Can create a new img every time battery is drawn, because of very low refresh rate
-void update_battery()
-{
-    // Set source based on battery level
-    // TODO: battery status enum and battery get function
-    uint level = 20;
-    if (level >= 75)
-    {
-        lv_img_set_src(battery, &battery_full);
-    }
-    else if (level >= 50)
-    {
-        lv_img_set_src(battery, &battery_75);
-    }
-    else if (level >= 25)
-    {
-        lv_img_set_src(battery, &battery_50);
-    }
-    else if (level >= 10)
-    {
-        lv_img_set_src(battery, &battery_25);
-    }
-    else
-    {
-        lv_img_set_src(battery, &battery_low);
-    }
-}
+// void update_battery()
+// {
+//     // Set source based on battery level
+//     // TODO: battery status enum and battery get function
+//     uint level = 20;
+//     if (level >= 75)
+//     {
+//         lv_img_set_src(battery, &battery_full);
+//     }
+//     else if (level >= 50)
+//     {
+//         lv_img_set_src(battery, &battery_75);
+//     }
+//     else if (level >= 25)
+//     {
+//         lv_img_set_src(battery, &battery_50);
+//     }
+//     else if (level >= 10)
+//     {
+//         lv_img_set_src(battery, &battery_25);
+//     }
+//     else
+//     {
+//         lv_img_set_src(battery, &battery_low);
+//     }
+// }
 
 void create_centered_number_label()
 {
@@ -114,15 +115,15 @@ static void lv_tick_init()
     timer_hw->alarm[ALARM_NUM] = (uint32_t)target;
 }
 
-void battery_init()
-{
-    battery = lv_img_create(screen);
-    lv_obj_align(battery, LV_ALIGN_TOP_LEFT, battery_x, battery_y);
-    lv_timer_create(update_battery, BATT_UPDATE_MS, NULL);
+// void battery_init()
+// {
+//     battery = lv_img_create(screen);
+//     lv_obj_align(battery, LV_ALIGN_TOP_LEFT, battery_x, battery_y);
+//     lv_timer_create(update_battery, BATT_UPDATE_MS, NULL);
 
-    // Draw the battery first
-    update_battery();
-}
+//     // Draw the battery first
+//     update_battery();
+// }
 
 void speed_init()
 {
@@ -139,6 +140,6 @@ void screen_init()
 
     screen = lv_scr_act();
 
-    battery_init();
+    battery_init(screen);
     speed_init();
 }
