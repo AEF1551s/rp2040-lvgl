@@ -7,6 +7,10 @@
 #include "hardware/adc.h"
 #include "hardware/timer.h"
 #include "hardware/irq.h"
+#include "low_pass_filter.h"
+
+const static uint CLAMP_LOW = 3000;
+const static uint CLAMP_HIGH = 4000;
 
 void turtle_init();
 uint get_turtle();

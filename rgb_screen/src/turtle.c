@@ -6,8 +6,6 @@ const static uint TIMER_NUM = 0;
 const static uint ALARM_NUM = 0;
 const static uint ALARM_IRQ = 0;
 const static uint32_t PERIOD_MS = 1;
-const static uint CLAMP_LOW = 3000;
-const static uint CLAMP_HIGH = 4000;
 
 static volatile uint16_t adc_value = 0; // Store ADC value updated by timer
 
@@ -72,5 +70,6 @@ static inline uint clamp_range(uint value, uint low, uint high)
 inline uint get_turtle()
 {
     uint result = clamp_range(adc_value, CLAMP_LOW, CLAMP_HIGH);
+    result = low_pass_filter(result);
     return result;
 }
