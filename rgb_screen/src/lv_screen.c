@@ -1,6 +1,9 @@
 #include "lv_screen.h"
 
+static lv_obj_t *screen;
 static lv_obj_t *label;
+static lv_obj_t *battery = NULL;
+
 static char buf[10];
 
 const static uint TIMER_NUM = 0;
@@ -8,11 +11,54 @@ const static uint ALARM_NUM = 1;
 const static uint ALARM_IRQ = 1;
 const static uint32_t PERIOD_MS = 1;
 
+const static unsigned int Y_OFFSET = 20;
+
+const static unsigned int SPEED_UPDATE_MS = 50;
+const static unsigned int BATT_UPDATE_MS = 1000;
+
+// Battery images
+LV_IMG_DECLARE(battery_low);
+LV_IMG_DECLARE(battery_25);
+LV_IMG_DECLARE(battery_50);
+LV_IMG_DECLARE(battery_75);
+LV_IMG_DECLARE(battery_full);
+
+const static uint battery_x = 10;
+const static uint battery_y = Y_OFFSET + 10;
+
+// Can create a new img every time battery is drawn, because of very low refresh rate
+void update_battery()
+{
+    // Set source based on battery level
+    // TODO: battery status enum and battery get function
+    uint level = 20;
+    if (level >= 75)
+    {
+        lv_img_set_src(battery, &battery_full);
+    }
+    else if (level >= 50)
+    {
+        lv_img_set_src(battery, &battery_75);
+    }
+    else if (level >= 25)
+    {
+        lv_img_set_src(battery, &battery_50);
+    }
+    else if (level >= 10)
+    {
+        lv_img_set_src(battery, &battery_25);
+    }
+    else
+    {
+        lv_img_set_src(battery, &battery_low);
+    }
+}
+
 void create_centered_number_label()
 {
     // Create a label
     // label = lv_label_create(parent);
-    label = lv_label_create(lv_scr_act());
+    label = lv_label_create(screen);
 
     // Set initial text (0–99)
     char buf[5]; // Enough for "99\0"
@@ -31,10 +77,10 @@ void create_centered_number_label()
     lv_obj_center(label);
 }
 
-void update_label_number(unsigned int number)
+void update_speed()
 {
     char buf[5];
-    snprintf(buf, sizeof(buf), "%u", number);
+    snprintf(buf, sizeof(buf), "%u", get_turtle());
     lv_label_set_text(label, buf);
     lv_obj_center(label); // recenter in case width changes (e.g. 1 → 10)
 }
@@ -49,7 +95,7 @@ static void lv_tick_irq(void)
 
     lv_tick_inc(1);
 }
-static void alarm_ms_init()
+static void lv_tick_init()
 {
     // Enable the interrupt for our alarm (the timer outputs 4 alarm irqs)
     hw_set_bits(&timer_hw->inte, 1u << ALARM_NUM);
@@ -68,12 +114,31 @@ static void alarm_ms_init()
     timer_hw->alarm[ALARM_NUM] = (uint32_t)target;
 }
 
+void battery_init()
+{
+    battery = lv_img_create(screen);
+    lv_obj_align(battery, LV_ALIGN_TOP_LEFT, battery_x, battery_y);
+    lv_timer_create(update_battery, BATT_UPDATE_MS, NULL);
+
+    // Draw the battery first
+    update_battery();
+}
+
+void speed_init()
+{
+    create_centered_number_label();
+    lv_timer_create(update_speed, SPEED_UPDATE_MS, NULL);
+}
+
+// Initialize every object on screen, timer for updating them.
 void screen_init()
 {
     lv_init();
     lv_port_disp_init();
-    alarm_ms_init();
+    lv_tick_init();
 
-    create_centered_number_label();
-    update_label_number(10);
+    screen = lv_scr_act();
+
+    battery_init();
+    speed_init();
 }
