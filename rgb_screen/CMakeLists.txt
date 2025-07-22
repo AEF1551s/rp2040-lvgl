@@ -21,6 +21,7 @@ add_executable(rgb_screen
     src/lv_screen.c
     src/motor.c
     src/low_pass_filter.c
+    src/spi0_dma.c
     assets/battery/battery_low.c
     assets/battery/battery_25.c
     assets/battery/battery_50.c
@@ -57,6 +58,7 @@ target_link_libraries(rgb_screen
     hardware_adc
     hardware_irq
     hardware_pwm
+    hardware_dma
 
 )
 
