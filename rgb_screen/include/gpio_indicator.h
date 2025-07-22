@@ -5,7 +5,7 @@
 #include "lvgl.h"
 #include "lv_port_disp.h"
 
-extern bool indicator_left_flag;
-extern bool indicator_right_flag;
+extern volatile bool indicator_left_flag;
+extern volatile bool indicator_right_flag;
 
 #endif // GPIO_INDICATOR_H
