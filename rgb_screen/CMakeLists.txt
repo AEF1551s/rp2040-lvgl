@@ -22,12 +22,20 @@ add_executable(rgb_screen
     src/motor.c
     src/low_pass_filter.c
     src/spi0_dma.c
+    src/gpio_indicator.c
+
     assets/battery/battery_low.c
+    assets/battery/battery_10.c
     assets/battery/battery_25.c
     assets/battery/battery_50.c
     assets/battery/battery_75.c
     assets/battery/battery_full.c
+    assets/indicators/left_indicator_act.c
+    assets/indicators/left_indicator_emerg.c
+    assets/indicators/left_indicator_empty.c
+
     screen/battery.c
+    screen/indicators.c
 
 
 )
