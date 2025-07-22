@@ -91,4 +91,5 @@ void screen_init()
 
     battery_init(screen);
     speed_init();
+    indicators_init(screen);
 }

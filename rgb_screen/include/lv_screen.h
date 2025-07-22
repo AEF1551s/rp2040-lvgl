@@ -9,7 +9,7 @@
 #include "lvgl.h"
 #include "lv_port_disp.h"
 #include "battery.h"
-
+#include "indicators.h"
 
 #include "turtle.h"
 
