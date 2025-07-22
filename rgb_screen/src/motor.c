@@ -1,6 +1,6 @@
 #include "motor.h"
 
-const static uint MOTOR_PIN = 0;
+const static uint MOTOR_PIN = 1;
 const static uint PWM_WRAP = CLAMP_HIGH-CLAMP_LOW;
 const static uint TURTLE_OFFSET = CLAMP_LOW;
 
@@ -19,6 +19,10 @@ static void on_pwm_wrap()
 
 void motor_init()
 {
+    // gpio_init(MOTOR_PIN);
+    // gpio_set_dir(MOTOR_PIN, GPIO_OUT);
+    // gpio_put(MOTOR_PIN, 0);
+
     // Tell the LED pin that the PWM is in charge of its value.
     gpio_set_function(MOTOR_PIN, GPIO_FUNC_PWM);
     // Figure out which slice we just connected to the LED pin
