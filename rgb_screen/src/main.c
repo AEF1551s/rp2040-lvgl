@@ -19,5 +19,9 @@ int main()
     while (true)
     {
         lv_timer_handler(); // Required for LVGL to refresh GUI
+        
+        if(filter_needed){
+            filter_turtle();
+        }
     }
 }
