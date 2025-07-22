@@ -71,5 +71,7 @@ inline uint get_turtle()
 {
     uint result = clamp_range(adc_value, CLAMP_LOW, CLAMP_HIGH);
     result = low_pass_filter(result);
+    result = clamp_range(result, CLAMP_LOW, CLAMP_HIGH); //Quick fix so lp filter doesnt return less then clamp low due to FP losses
+    
     return result;
 }
