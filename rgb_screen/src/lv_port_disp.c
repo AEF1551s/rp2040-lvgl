@@ -14,27 +14,28 @@
 
 #include "pico/stdlib.h"
 #include "hardware/spi.h"
-
+#include "spi0_dma.h"
 /*********************
  *      DEFINES
  *********************/
-#define MY_DISP_HOR_RES    240
-#define MY_DISP_VER_RES    320
+#define MY_DISP_HOR_RES 240
+#define MY_DISP_VER_RES 320
 
 /**********************
  *      TYPEDEFS
  **********************/
-typedef struct {
+typedef struct
+{
     uint8_t cmd;
     uint8_t data[16];
-    uint8_t databytes; //No of data in data; bit 7 = delay after set; 0xFF = end of cmds.
+    uint8_t databytes; // No of data in data; bit 7 = delay after set; 0xFF = end of cmds.
 } lcd_init_cmd_t;
 
 /**********************
  *  STATIC PROTOTYPES
  **********************/
 static void disp_init(void);
-static void disp_flush(lv_disp_drv_t * disp_drv, const lv_area_t * area, lv_color_t * color_p);
+static void disp_flush(lv_disp_drv_t *disp_drv, const lv_area_t *area, lv_color_t *color_p);
 
 /**********************
  *  STATIC VARIABLES
@@ -82,8 +83,8 @@ void lv_port_disp_init(void)
 
     /* Example for 1) */
     static lv_disp_draw_buf_t draw_buf_dsc_1;
-    static lv_color_t buf_1[MY_DISP_HOR_RES * 10];                          /*A buffer for 10 rows*/
-    lv_disp_draw_buf_init(&draw_buf_dsc_1, buf_1, NULL, MY_DISP_HOR_RES * 10);   /*Initialize the display buffer*/
+    static lv_color_t buf_1[MY_DISP_HOR_RES * 10];                             /*A buffer for 10 rows*/
+    lv_disp_draw_buf_init(&draw_buf_dsc_1, buf_1, NULL, MY_DISP_HOR_RES * 10); /*Initialize the display buffer*/
 
     // /* Example for 2) */
     // static lv_disp_draw_buf_t draw_buf_dsc_2;
@@ -102,8 +103,8 @@ void lv_port_disp_init(void)
      * Register the display in LVGL
      *----------------------------------*/
 
-    static lv_disp_drv_t disp_drv;                         /*Descriptor of a display driver*/
-    lv_disp_drv_init(&disp_drv);                    /*Basic initialization*/
+    static lv_disp_drv_t disp_drv; /*Descriptor of a display driver*/
+    lv_disp_drv_init(&disp_drv);   /*Basic initialization*/
 
     /*Set up the functions to access to your display*/
 
@@ -118,21 +119,22 @@ void lv_port_disp_init(void)
     disp_drv.draw_buf = &draw_buf_dsc_1;
 
     /*Required for Example 3)*/
-    //disp_drv.full_refresh = 1;
+    // disp_drv.full_refresh = 1;
 
     /* Fill a memory array with a color if you have GPU.
      * Note that, in lv_conf.h you can enable GPUs that has built-in support in LVGL.
      * But if you have a different GPU you can use with this callback.*/
-    //disp_drv.gpu_fill_cb = gpu_fill;
+    // disp_drv.gpu_fill_cb = gpu_fill;
 
     /*Finally register the driver*/
     lv_disp_drv_register(&disp_drv);
-
+    set_disp_drv(&disp_drv);
 }
 
 /**********************
  *   STATIC FUNCTIONS
  **********************/
+// TODO: some of these pins are not used and moved to spi0_dma.h
 static const int gpio_din = 3;
 static const int gpio_clk = 2;
 static const int gpio_cs = 17;
@@ -146,32 +148,34 @@ static void st7789_send_cmd(uint8_t cmd)
     gpio_put(gpio_cs, 0);
     sleep_us(1);
 
-    spi_write_blocking(spi0, (uint8_t[]){ cmd }, 1);
-   
+    spi_write_blocking(spi0, (uint8_t[]){cmd}, 1);
+
     sleep_us(1);
     gpio_put(gpio_cs, 1);
 }
 
-static void st7789_send_data(void * data, uint16_t length)
+static void st7789_send_data(void *data, uint16_t length)
 {
     gpio_put(gpio_dc, 1);
     gpio_put(gpio_cs, 0);
     sleep_us(1);
 
     spi_write_blocking(spi0, data, length);
-   
+
     sleep_us(1);
     gpio_put(gpio_cs, 1);
 }
 
-static void st7789_send_color(void * data, size_t length)
+static void st7789_send_color(void *data, size_t length)
 {
     gpio_put(gpio_dc, 1);
     gpio_put(gpio_cs, 0);
     sleep_us(1);
 
-    spi_write_blocking(spi0, data, length);
-   
+    // spi_write_blocking(spi0, data, length);
+    dma_reinit(data, length);
+    // dma_unclaim();
+
     sleep_us(1);
     gpio_put(gpio_cs, 1);
 }
@@ -184,8 +188,8 @@ static void st7789_set_orientation(uint8_t orientation)
     gpio_put(gpio_cs, 0);
     sleep_us(1);
 
-    spi_write_blocking(spi0, (uint8_t[]){ orientation }, 1);
-   
+    spi_write_blocking(spi0, (uint8_t[]){orientation}, 1);
+
     sleep_us(1);
     gpio_put(gpio_cs, 1);
 }
@@ -207,7 +211,7 @@ static void disp_init(void)
         {ST7789_CABCCTRL, {0xBE}, 1},
         {ST7789_MADCTL, {0x00}, 1}, // Set to 0x28 if your display is flipped
         {ST7789_COLMOD, {0x55}, 1},
-		{ST7789_INVON, {0}, 0}, // set inverted mode
+        {ST7789_INVON, {0}, 0}, // set inverted mode
         {ST7789_RGBCTRL, {0x00, 0x1B}, 2},
         {0xF2, {0x08}, 1},
         {ST7789_GAMSET, {0x01}, 1},
@@ -225,11 +229,8 @@ static void disp_init(void)
     };
 
     // TODO: replace with spi_dma_init
-    spi_init(spi0, 125 * 1000 * 1000);
-    spi_set_format(spi0, 8, SPI_CPOL_0, SPI_CPHA_0, SPI_MSB_FIRST);
 
-    gpio_set_function(gpio_din, GPIO_FUNC_SPI);
-    gpio_set_function(gpio_clk, GPIO_FUNC_SPI);
+    spi0_dma_init();
 
     gpio_init(gpio_cs);
     gpio_init(gpio_dc);
@@ -251,18 +252,20 @@ static void disp_init(void)
     gpio_put(gpio_rst, 1);
     sleep_ms(100);
 
-    //Send all the commands
+    // Send all the commands
     uint16_t cmd = 0;
-    while (st7789_init_cmds[cmd].databytes!=0xff) {
+    while (st7789_init_cmds[cmd].databytes != 0xff)
+    {
         st7789_send_cmd(st7789_init_cmds[cmd].cmd);
-        st7789_send_data(st7789_init_cmds[cmd].data, st7789_init_cmds[cmd].databytes&0x1F);
-        if (st7789_init_cmds[cmd].databytes & 0x80) {
+        st7789_send_data(st7789_init_cmds[cmd].data, st7789_init_cmds[cmd].databytes & 0x1F);
+        if (st7789_init_cmds[cmd].databytes & 0x80)
+        {
             sleep_ms(100);
         }
         cmd++;
     }
 
-    // TODO: ORIENTATIONS - 
+    // TODO: ORIENTATIONS -
     st7789_set_orientation(0x60);
 
     gpio_put(gpio_bl, 1);
@@ -287,9 +290,10 @@ void disp_disable_update(void)
 /*Flush the content of the internal buffer the specific area on the display
  *You can use DMA or any hardware acceleration to do this operation in the background but
  *'lv_disp_flush_ready()' has to be called when finished.*/
-static void disp_flush(lv_disp_drv_t * disp_drv, const lv_area_t * area, lv_color_t * color_p)
+static void disp_flush(lv_disp_drv_t *disp_drv, const lv_area_t *area, lv_color_t *color_p)
 {
-    if(disp_flush_enabled) {
+    if (disp_flush_enabled)
+    {
         uint8_t data[4] = {0};
 
         uint16_t offsetx1 = area->x1;
@@ -317,13 +321,14 @@ static void disp_flush(lv_disp_drv_t * disp_drv, const lv_area_t * area, lv_colo
         st7789_send_cmd(ST7789_RAMWR);
 
         size_t size = (size_t)lv_area_get_width(area) * (size_t)lv_area_get_height(area);
-
-        st7789_send_color((void*)color_p, size * 2);
+        st7789_send_color((void *)color_p, size * 2);
+        sleep_ms(1);
     }
 
     /*IMPORTANT!!!
-     *Inform the graphics library that you are ready with the flushing*/
-    lv_disp_flush_ready(disp_drv);
+     *Inform the graphics library that you are ready with the flushing
+     !!!THIS IS DONE IN SPI0_DMA DMA_HANDLER ISR!!!*/
+    
 }
 
 #else /*Enable this file at the top*/

@@ -22,6 +22,7 @@ extern "C" {
 #include "lvgl/lvgl.h"
 #endif
 
+#include "spi0_dma.h"
 /*********************
  *      DEFINES
  *********************/
