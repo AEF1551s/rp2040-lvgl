@@ -7,7 +7,9 @@ const static uint ALARM_NUM = 0;
 const static uint ALARM_IRQ = 0;
 const static uint32_t PERIOD_MS = 1;
 
-static volatile uint16_t adc_value = 0; // Store ADC value updated by timer
+static volatile uint16_t adc_value = CLAMP_LOW; // Store ADC value updated by timer
+static volatile uint16_t adc_value_f = CLAMP_LOW;
+volatile bool filter_needed = false;
 
 static void alarm_ms_init()
 {
@@ -38,6 +40,8 @@ static void alarm_irq(void)
 
     adc_select_input(ADC_CHANNEL);
     adc_value = adc_read();
+
+    filter_needed = true;
 }
 
 void turtle_init()
@@ -67,11 +71,17 @@ static inline uint clamp_range(uint value, uint low, uint high)
     return result;
 }
 
-inline uint get_turtle()
+uint get_turtle()
+{
+    return adc_value_f;
+}
+
+void filter_turtle()
 {
     uint result = clamp_range(adc_value, CLAMP_LOW, CLAMP_HIGH);
     result = low_pass_filter(result);
-    result = clamp_range(result, CLAMP_LOW, CLAMP_HIGH); //Quick fix so lp filter doesnt return less then clamp low due to FP losses
-    
-    return result;
+    result = rate_limiter(result);
+    result = clamp_range(result, CLAMP_LOW, CLAMP_HIGH); // Quick fix so lp filter doesnt return less then clamp low due to FP losses
+    adc_value_f =  result;
+    filter_needed = false;
 }
