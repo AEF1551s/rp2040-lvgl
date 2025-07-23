@@ -11,7 +11,7 @@
 #include "battery.h"
 #include "indicators.h"
 
-#include "turtle.h"
+#include "throttle.h"
 
 static void lv_tick_init();
 static void lv_tick_irq(void);

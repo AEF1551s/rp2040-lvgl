@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include "pico/stdlib.h"
 
-#include "turtle.h"
+#include "throttle.h"
 #include "motor.h"
 #include "indicators.h"
 #include "gpio_indicator.h"

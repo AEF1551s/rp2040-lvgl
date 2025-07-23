@@ -17,7 +17,7 @@ pico_sdk_init()
 add_executable(rgb_screen
     src/main.c
     src/lv_port_disp.c
-    src/turtle.c
+    src/throttle.c
     src/lv_screen.c
     src/motor.c
     src/low_pass_filter.c

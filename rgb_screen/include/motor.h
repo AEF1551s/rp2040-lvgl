@@ -7,7 +7,7 @@
 #include "hardware/irq.h"
 #include "hardware/pwm.h"
 
-#include "turtle.h"
+#include "throttle.h"
 
 void motor_init();
 
