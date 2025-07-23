@@ -5,15 +5,16 @@ static const int gpio_clk = 2;
 static const int gpio_cs = 17;
 static const int gpio_dc = 16;
 
-volatile uint dma_tx;
-lv_disp_drv_t *disp_drv_dma;
+static volatile uint dma_tx;
+
+static lv_disp_drv_t *disp_drv_dma;
 
 void set_disp_drv(lv_disp_drv_t *disp_drv)
 {
     disp_drv_dma = disp_drv;
 }
 
-void dma_handler()
+static void dma_handler()
 {
     dma_hw->ints0 = 1u << dma_tx;
     lv_disp_flush_ready(disp_drv_dma);
@@ -21,7 +22,7 @@ void dma_handler()
 
 void spi0_dma_init()
 {
-    spi_init(spi0, 125 * 1000 * 1000);
+    spi_init(spi0, 200 * 1000 * 1000);
     spi_set_format(spi0, 8, SPI_CPOL_0, SPI_CPHA_0, SPI_MSB_FIRST);
 
     gpio_set_function(gpio_din, GPIO_FUNC_SPI);

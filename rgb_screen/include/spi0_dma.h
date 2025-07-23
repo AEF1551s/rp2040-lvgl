@@ -8,7 +8,6 @@
 #include "lvgl.h"
 
 void set_disp_drv(lv_disp_drv_t * disp_drv);
-void dma_handler();
 
 void spi0_dma_init();
 void dma_reinit(void * data, size_t length);
