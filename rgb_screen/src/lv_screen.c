@@ -14,37 +14,6 @@ const static unsigned int Y_OFFSET = 20;
 
 const static unsigned int SPEED_UPDATE_MS = 50;
 
-void create_centered_number_label()
-{
-    // Create a label
-    // label = lv_label_create(parent);
-    label = lv_label_create(screen);
-
-    // Set initial text (0–99)
-    char buf[5]; // Enough for "99\0"
-    snprintf(buf, sizeof(buf), "%u", 0);
-    lv_label_set_text(label, buf);
-
-    // Create style with larger font
-    static lv_style_t style;
-    lv_style_init(&style);
-    lv_style_set_text_font(&style, &lv_font_montserrat_48); // ← larger font
-
-    // Apply style to label
-    lv_obj_add_style(label, &style, 0);
-
-    // Center the label on the screen
-    lv_obj_center(label);
-}
-
-void update_speed()
-{
-    char buf[5];
-    snprintf(buf, sizeof(buf), "%u", get_turtle());
-    lv_label_set_text(label, buf);
-    lv_obj_center(label); // recenter in case width changes (e.g. 1 → 10)
-}
-
 static void lv_tick_irq(void)
 {
     static uint64_t target = 0;
@@ -74,10 +43,41 @@ static void lv_tick_init()
     timer_hw->alarm[ALARM_NUM] = (uint32_t)target;
 }
 
-void speed_init()
+static void speed_init()
 {
     create_centered_number_label();
     lv_timer_create(update_speed, SPEED_UPDATE_MS, NULL);
+}
+
+void create_centered_number_label()
+{
+    // Create a label
+    // label = lv_label_create(parent);
+    label = lv_label_create(screen);
+
+    // Set initial text (0–99)
+    char buf[5]; // Enough for "99\0"
+    snprintf(buf, sizeof(buf), "%u", 0);
+    lv_label_set_text(label, buf);
+
+    // Create style with larger font
+    static lv_style_t style;
+    lv_style_init(&style);
+    lv_style_set_text_font(&style, &lv_font_montserrat_48); // ← larger font
+
+    // Apply style to label
+    lv_obj_add_style(label, &style, 0);
+
+    // Center the label on the screen
+    lv_obj_center(label);
+}
+
+void update_speed()
+{
+    char buf[5];
+    snprintf(buf, sizeof(buf), "%u", get_turtle());
+    lv_label_set_text(label, buf);
+    lv_obj_center(label); // recenter in case width changes (e.g. 1 → 10)
 }
 
 // Initialize every object on screen, timer for updating them.

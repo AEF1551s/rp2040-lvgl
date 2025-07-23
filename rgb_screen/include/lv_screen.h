@@ -13,12 +13,7 @@
 
 #include "throttle.h"
 
-static void lv_tick_init();
-static void lv_tick_irq(void);
-
 void screen_init();
-void speed_init();
-
 
 void create_centered_number_label();
 void update_speed();
