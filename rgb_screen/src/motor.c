@@ -4,17 +4,30 @@ static const uint MOTOR_PIN = 1;
 static const uint PWM_WRAP = CLAMP_HIGH - CLAMP_LOW;
 static const uint TURTLE_OFFSET = CLAMP_LOW;
 
+static const uint PWM_LOW = PWM_WRAP * 0.4;  // 40%
+static const uint PWM_HIGH = PWM_WRAP * 0.6; // 60%
+
 static void on_pwm_wrap();
 
 static void on_pwm_wrap()
 {
-
     // Clear the interrupt flag that brought us here
     pwm_clear_irq(pwm_gpio_to_slice_num(MOTOR_PIN));
 
+    uint value = get_turtle() - TURTLE_OFFSET;
+
+    // Clamp from low to high pwm values
+    value = MAX(value, PWM_LOW);
+    value = MIN(value, PWM_HIGH);
+
+    // if value is  low threshold then cond = 0x0000, if its above then it overflows to 0xFFFF
+    // With this if its low threshold the value can be zeroed, if its above then it keeps its original value
+    uint cond = -!(value <= PWM_LOW);
+    value &= cond; // use the condition as mask,
+
     // Square the fade value to make the LED's brightness appear more linear
     // Note this range matches with the wrap value
-    pwm_set_gpio_level(MOTOR_PIN, get_turtle() - TURTLE_OFFSET);
+    pwm_set_gpio_level(MOTOR_PIN, value);
 }
 
 void motor_init()
