@@ -5,14 +5,14 @@ static lv_obj_t *label = NULL;
 
 static char buf[10];
 
-const static uint TIMER_NUM = 0;
-const static uint ALARM_NUM = 1;
-const static uint ALARM_IRQ = 1;
-const static uint32_t PERIOD_MS = 1;
+static const uint TIMER_NUM = 0;
+static const uint ALARM_NUM = 1;
+static const uint ALARM_IRQ = 1;
+static const uint32_t PERIOD_MS = 1;
 
-const static unsigned int Y_OFFSET = 20;
+static const unsigned int Y_OFFSET = 20;
 
-const static unsigned int SPEED_UPDATE_MS = 50;
+static const unsigned int SPEED_UPDATE_MS = 50;
 
 static void lv_tick_irq(void)
 {

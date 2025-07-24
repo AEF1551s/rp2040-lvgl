@@ -1,7 +1,7 @@
 #include "battery.h"
 
 static lv_obj_t *battery = NULL;
-const static unsigned int BATT_UPDATE_MS = 1000;
+static const unsigned int BATT_UPDATE_MS = 1000;
 
 // Battery images
 LV_IMG_DECLARE(battery_low);
@@ -11,10 +11,10 @@ LV_IMG_DECLARE(battery_50);
 LV_IMG_DECLARE(battery_75);
 LV_IMG_DECLARE(battery_full);
 
-const static unsigned int Y_OFFSET = 20;
+static const unsigned int Y_OFFSET = 20;
 
-const static unsigned int battery_x = 0;
-const static unsigned int battery_y = Y_OFFSET + 0;
+static const unsigned int battery_x = 0;
+static const unsigned int battery_y = Y_OFFSET + 0;
 
 void battery_init(lv_obj_t *screen)
 {
@@ -33,7 +33,7 @@ void update_battery()
     // Set source based on battery level
     // TODO: battery status enum and battery get function
     static unsigned int level = 0;
-    if (level <=100 && level >=85)
+    if (level <= 100 && level >= 85)
     {
         lv_img_set_src(battery, &battery_full);
     }
@@ -58,6 +58,6 @@ void update_battery()
         lv_img_set_src(battery, &battery_low);
     }
 
-    level+=10;
-    level%=101;
+    level += 10;
+    level %= 101;
 }

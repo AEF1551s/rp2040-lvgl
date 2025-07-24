@@ -9,13 +9,13 @@ LV_IMG_DECLARE(left_indicator_empty);
 
 const unsigned int INDICATOR_UPDATE_MS = 700;
 
-const static short int Y_OFFSET = 0;
+static const short int Y_OFFSET = 0;
 
-const static short int indicator_left_x = 5;
-const static short int indicator_left_y = Y_OFFSET - 10;
+static const short int indicator_left_x = 5;
+static const short int indicator_left_y = Y_OFFSET - 10;
 
-const static short int indicator_right_x = -5;
-const static short int indicator_right_y = Y_OFFSET - 10;
+static const short int indicator_right_x = -5;
+static const short int indicator_right_y = Y_OFFSET - 10;
 
 void indicators_init(lv_obj_t *screen)
 {

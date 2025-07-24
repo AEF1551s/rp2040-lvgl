@@ -1,8 +1,8 @@
 #include "motor.h"
 
-const static uint MOTOR_PIN = 1;
-const static uint PWM_WRAP = CLAMP_HIGH-CLAMP_LOW;
-const static uint TURTLE_OFFSET = CLAMP_LOW;
+static const uint MOTOR_PIN = 1;
+static const uint PWM_WRAP = CLAMP_HIGH - CLAMP_LOW;
+static const uint TURTLE_OFFSET = CLAMP_LOW;
 
 static void on_pwm_wrap();
 
@@ -14,7 +14,7 @@ static void on_pwm_wrap()
 
     // Square the fade value to make the LED's brightness appear more linear
     // Note this range matches with the wrap value
-    pwm_set_gpio_level(MOTOR_PIN, get_turtle()-TURTLE_OFFSET);
+    pwm_set_gpio_level(MOTOR_PIN, get_turtle() - TURTLE_OFFSET);
 }
 
 void motor_init()

@@ -10,8 +10,8 @@
 #include "hardware/irq.h"
 #include "low_pass_filter.h"
 
-const static uint CLAMP_LOW =100;
-const static uint CLAMP_HIGH = 4000;
+static const uint CLAMP_LOW = 100;
+static const uint CLAMP_HIGH = 4000;
 
 extern volatile bool filter_needed;
 

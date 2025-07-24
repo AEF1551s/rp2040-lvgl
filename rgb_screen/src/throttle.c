@@ -1,11 +1,11 @@
 #include "throttle.h"
 
 static uint ADC_PIN = 26;
-const static uint ADC_CHANNEL = 0;
-const static uint TIMER_NUM = 0;
-const static uint ALARM_NUM = 0;
-const static uint ALARM_IRQ = 0;
-const static uint32_t PERIOD_MS = 1;
+static const uint ADC_CHANNEL = 0;
+static const uint TIMER_NUM = 0;
+static const uint ALARM_NUM = 0;
+static const uint ALARM_IRQ = 0;
+static const uint32_t PERIOD_MS = 1;
 
 static volatile uint16_t adc_value = CLAMP_LOW; // Store ADC value updated by timer
 static volatile uint16_t adc_value_f = CLAMP_LOW;
@@ -82,6 +82,6 @@ void filter_turtle()
     result = low_pass_filter(result);
     result = rate_limiter(result);
     result = clamp_range(result, CLAMP_LOW, CLAMP_HIGH); // Quick fix so lp filter doesnt return less then clamp low due to FP losses
-    adc_value_f =  result;
+    adc_value_f = result;
     filter_needed = false;
 }
