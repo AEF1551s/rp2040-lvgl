@@ -71,7 +71,7 @@ static inline uint clamp_range(uint value, uint low, uint high)
     return result;
 }
 
-uint get_turtle()
+inline uint get_turtle()
 {
     return adc_value_f;
 }
