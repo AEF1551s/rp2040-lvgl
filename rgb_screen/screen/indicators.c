@@ -2,12 +2,13 @@
 
 static lv_obj_t *indicator_left = NULL;
 static lv_obj_t *indicator_right = NULL;
+static lv_timer_t *timer;
 
 LV_IMG_DECLARE(left_indicator_act);
 LV_IMG_DECLARE(left_indicator_emerg);
 LV_IMG_DECLARE(left_indicator_empty);
 
-const unsigned int INDICATOR_UPDATE_MS = 700;
+const unsigned int INDICATOR_UPDATE_MS = 333;
 
 static const short int Y_OFFSET = 0;
 
@@ -16,6 +17,11 @@ static const short int indicator_left_y = Y_OFFSET - 10;
 
 static const short int indicator_right_x = -5;
 static const short int indicator_right_y = Y_OFFSET - 10;
+
+static bool indicator_active = false;
+
+#define INDICATOR_UPDATE_COUNT (unsigned int)6
+static_assert(INDICATOR_UPDATE_COUNT % 2 == 0, "INDICATOR_UPDATE_COUNT must be divisible by 2!");
 
 void indicators_init(lv_obj_t *screen)
 {
@@ -31,45 +37,73 @@ void indicators_init(lv_obj_t *screen)
 
     lv_img_set_src(indicator_left, &left_indicator_empty);
     lv_img_set_src(indicator_right, &left_indicator_empty);
+
+    gpio_indicator_init();
 }
 
 void indicator_right_toogle()
 {
-    // TODO: implement flashing indicators
-    // static bool active = false;
-    // if (active == true)
-    // {
-    //     lv_img_set_src(indicator, &left_indicator_act);
-    // }
-    // else
-    // {
-    //     lv_img_set_src(indicator, &left_indicator_empty);
-    // }
-    // active ^= true;
+    static unsigned int count = 0;
+    if (count % 2 == 0)
+    {
+        lv_img_set_src(indicator_right, &left_indicator_act);
+    }
+    else
+    {
+        lv_img_set_src(indicator_right, &left_indicator_empty);
+    }
+    count++;
+    if (count >= INDICATOR_UPDATE_COUNT)
+    {
+        indicator_active = false;
+        indicator_right_flag = false;
+        count = 0;
+        indicator_irq_ctrl(true, true, true);
+
+    }
 }
 
 void indicator_left_toogle()
 {
-    // static bool active = false;
-    // if (active == true)
-    // {
-    //     lv_img_set_src(indicator, &left_indicator_act);
-    // }
-    // else
-    // {
-    //     lv_img_set_src(indicator, &left_indicator_empty);
-    // }
-    // active ^= true;
-}
-
-void indicator_timer_init(bool right)
-{
-    if (right)
+    static unsigned int count = 0;
+    if (count % 2 == 0)
     {
-        indicator_right_toogle();
+        lv_img_set_src(indicator_left, &left_indicator_act);
     }
     else
     {
-        indicator_left_toogle();
+        lv_img_set_src(indicator_left, &left_indicator_empty);
+    }
+    count++;
+    if (count >= INDICATOR_UPDATE_COUNT)
+    {
+        indicator_active = false;
+        indicator_left_flag = false;
+        count = 0;
+        indicator_irq_ctrl(true, true, true);
+        
+
+    }
+}
+lv_timer_cb_t timer_callback;
+
+void indicator_timer_init(bool right)
+{
+    if (!indicator_active)
+    {
+
+        indicator_active = true;
+
+        if (right)
+        {
+            timer_callback = indicator_right_toogle;
+        }
+        else
+        {
+            timer_callback = indicator_left_toogle;
+        }
+
+        timer = lv_timer_create(timer_callback, INDICATOR_UPDATE_MS, NULL);
+        timer->repeat_count = INDICATOR_UPDATE_COUNT;
     }
 }

@@ -5,7 +5,7 @@
 #include "lv_conf.h"
 #include "lvgl.h"
 #include "lv_port_disp.h"
-
+#include "gpio_indicator.h"
 
 void indicators_init(lv_obj_t *screen);
 void indicator_timer_init(bool right);

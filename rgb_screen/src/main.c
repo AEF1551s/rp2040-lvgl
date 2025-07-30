@@ -6,7 +6,6 @@
 #include "throttle.h"
 #include "motor.h"
 #include "indicators.h"
-#include "gpio_indicator.h"
 
 #include "lv_screen.h"
 
@@ -28,11 +27,13 @@ int main()
         }
         if (indicator_right_flag)
         {
-            indicator_timer_init(true);
+            indicator_timer_init(1);
+            // printf("RIGHT_INDICATOR\n");
         }
         if (indicator_left_flag)
         {
-            indicator_timer_init(false);
+            indicator_timer_init(0);
+            // printf("LEFT_INDICATOR\n");
         }
     }
 }
