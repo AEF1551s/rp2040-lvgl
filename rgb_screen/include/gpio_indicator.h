@@ -10,9 +10,12 @@
 
 #include <stdio.h>
 
-#define LEFT_PIN 4
-#define MIDDLE_PIN 7
-#define RIGHT_PIN 11
+#define INPUT_LEFT_PIN 4
+#define INPUT_MIDDLE_PIN 7
+#define INPUT_RIGHT_PIN 11
+
+#define LEFT_INDICATOR_PIN 14
+#define RIGHT_INDICATOR_PIN 15
 
 extern volatile bool indicator_left_flag;
 extern volatile bool indicator_right_flag;
@@ -25,11 +28,11 @@ __always_inline static void indicator_irq_ctrl(bool right, bool left, bool irq)
 {
     if (right)
     {
-        gpio_set_irq_enabled(RIGHT_PIN, GPIO_IRQ_EDGE_FALL, irq);
+        gpio_set_irq_enabled(INPUT_RIGHT_PIN, GPIO_IRQ_EDGE_FALL, irq);
     }
     if (left)
     {
-        gpio_set_irq_enabled(LEFT_PIN, GPIO_IRQ_EDGE_FALL, irq);
+        gpio_set_irq_enabled(INPUT_LEFT_PIN, GPIO_IRQ_EDGE_FALL, irq);
     }
 }
 

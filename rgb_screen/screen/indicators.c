@@ -47,10 +47,12 @@ void indicator_right_toogle()
     if (count % 2 == 0)
     {
         lv_img_set_src(indicator_right, &left_indicator_act);
+        gpio_put(RIGHT_INDICATOR_PIN, 1);
     }
     else
     {
         lv_img_set_src(indicator_right, &left_indicator_empty);
+        gpio_put(RIGHT_INDICATOR_PIN, 0);
     }
     count++;
     if (count >= INDICATOR_UPDATE_COUNT)
@@ -59,7 +61,7 @@ void indicator_right_toogle()
         indicator_right_flag = false;
         count = 0;
         indicator_irq_ctrl(true, true, true);
-
+        gpio_put(RIGHT_INDICATOR_PIN, 0);
     }
 }
 
@@ -69,10 +71,12 @@ void indicator_left_toogle()
     if (count % 2 == 0)
     {
         lv_img_set_src(indicator_left, &left_indicator_act);
+        gpio_put(LEFT_INDICATOR_PIN, 1);
     }
     else
     {
         lv_img_set_src(indicator_left, &left_indicator_empty);
+        gpio_put(LEFT_INDICATOR_PIN, 0);
     }
     count++;
     if (count >= INDICATOR_UPDATE_COUNT)
@@ -81,8 +85,7 @@ void indicator_left_toogle()
         indicator_left_flag = false;
         count = 0;
         indicator_irq_ctrl(true, true, true);
-        
-
+        gpio_put(LEFT_INDICATOR_PIN, 0);
     }
 }
 lv_timer_cb_t timer_callback;
